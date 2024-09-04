@@ -1,6 +1,6 @@
 import { SharedValue } from "react-native-reanimated";
 
-type ShapeVariant = "Circle" | "Paddle" | "Brick";
+type ShapeVariant = "Circle" | "Paddle" | "Brick" | "Explosion";
 
 export interface ShapeInterface {
   id: number;
@@ -44,8 +44,21 @@ export function isCircle(shape: ShapeInterface): shape is CircleInterface {
   return shape.type === "Circle";
 }
 
-export function isPaddle(shape: ShapeInterface): shape is CircleInterface {
+export function isPaddle(shape: ShapeInterface): shape is PaddleInterface {
   return shape.type === "Paddle";
+}
+
+export function isExplosion(shape: ShapeInterface): shape is ExplosionInterface {
+  return shape.type === "Explosion";
+}
+
+export interface ExplosionInterface extends ShapeInterface {
+  type: "Explosion";
+  /**
+   * The radius of the shape
+   */
+  opacity: SharedValue<number>;
+  r: SharedValue<number>;
 }
 
 export interface CircleInterface extends ShapeInterface {

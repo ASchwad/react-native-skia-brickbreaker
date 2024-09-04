@@ -1,6 +1,6 @@
-import { SharedValue } from "react-native-reanimated";
+import { SharedValue, withTiming } from "react-native-reanimated";
 import { MAX_SPEED, RADIUS, height, width } from "./constants";
-import { BrickInterface, CircleInterface, Collision, PaddleInterface, ShapeInterface, isCircle } from "./types";
+import { BrickInterface, CircleInterface, Collision, ExplosionInterface, PaddleInterface, ShapeInterface, isCircle, isExplosion } from "./types";
 
 export const createBouncingExample = (circleObject: CircleInterface) => {
     "worklet";
@@ -131,13 +131,17 @@ const resolveCollisionWithBounce = (info: Collision) => {
     circleInfo.ay = -circleInfo.ay;
 };
 
-const resolveCollisionWithExplosion = (info: Collision) => {
+const resolveCollisionWithExplosion = (info: Collision, explosionObject: ExplosionInterface) => {
     "worklet";
 
-    const circleInfo = info.o2 as BrickInterface;
+    const brickInfo = info.o2 as BrickInterface;
+    explosionObject.opacity.value = 1
+    explosionObject.x.value = brickInfo.x.value;
+    explosionObject.y.value = brickInfo.y.value;
+    // explosionPositionX.value = 250;
 
-    circleInfo.canCollide.value = false;
-    circleInfo.x.value = -1000;
+    brickInfo.canCollide.value = false;
+    brickInfo.x.value = -1000;
 };
 
 // circle paddle collision
@@ -173,7 +177,8 @@ const move = (object: CircleInterface, dt: number) => {
 export const animate = (
     objects: ShapeInterface[],
     timeSincePreviousFrame: number,
-    brickCount: number
+    brickCount: number,
+    explosionObject: ExplosionInterface
 ) => {
     "worklet";
     for(const o of objects){
@@ -200,7 +205,9 @@ export const animate = (
     }
     for (const collision of collisions) {
         console.log(collision);
-        if(collision.o1.type === "Brick" || collision.o2.type === "Brick") resolveCollisionWithExplosion(collision);
+        // explosionPositionX.value = 100;
+        if(collision.o1.type === "Brick" || collision.o2.type === "Brick") resolveCollisionWithExplosion(collision, explosionObject);
         resolveCollisionWithBounce(collision);
     }
+    
 }

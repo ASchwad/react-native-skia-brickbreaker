@@ -1,12 +1,13 @@
 import { Canvas, Circle, RoundedRect} from "@shopify/react-native-skia";
-import React from "react";
-import { StyleSheet, View } from "react-native";
-import { BrickInterface, CircleInterface, PaddleInterface, ShapeInterface, isCircle } from "./types";
-import { useFrameCallback, useSharedValue } from "react-native-reanimated";
+import React, { useState } from "react";
+import { Button, StyleSheet, View } from "react-native";
+import { BrickInterface, CircleInterface, ExplosionInterface, PaddleInterface, ShapeInterface, isCircle } from "./types";
+import { useFrameCallback, useSharedValue, withSpring } from "react-native-reanimated";
 import { createBouncingExample, resolveWallCollision } from "./logic";
 import { animate } from "./logic";
 import { BALL_COLOR, PADDLE_MIDDLE, RADIUS, height, width } from "./constants";
 import { Gesture, GestureDetector, GestureHandlerRootView } from "react-native-gesture-handler";
+import {Explosion} from "./explosion";
 
 export default function App(){
   const circleObject : CircleInterface = {
@@ -19,6 +20,20 @@ export default function App(){
     vx: 0,
     vy: 0,
     type: "Circle",
+    r: useSharedValue(RADIUS),
+  };
+  
+  const explosionObject : ExplosionInterface = {
+  id: 1,
+    x: useSharedValue(-500),
+    y: useSharedValue(0),
+    m: 1,
+    ax: 0,
+    ay: 0,
+    vx: 0,
+    vy: 0,
+    opacity: useSharedValue(0),
+    type: "Explosion",
     r: useSharedValue(RADIUS),
   };
 
@@ -38,9 +53,10 @@ export default function App(){
 
   createBouncingExample(circleObject);
 
-  const rows = 3;
-  const columns = 4;
-  const spacing = 40;
+  const rows = 4;
+  const columns = 3;
+  const columnPadding = 75;
+  const rowPadding = 30;
   const marginTop = 50;
   const marginLeft = 30;
 
@@ -50,8 +66,8 @@ export default function App(){
     for(let j = 0; j < columns; j++){
       bricks.push({
         id: i * columns + j,
-        x: useSharedValue(marginLeft + 50 * j + spacing * j),
-        y: useSharedValue(marginTop + 50 * i + spacing * i),
+        x: useSharedValue(marginLeft + 50 * j + columnPadding * j),
+        y: useSharedValue(marginTop + 50 * i + rowPadding * i),
         m: 1,
         ax: 0,
         ay: 0,
@@ -59,7 +75,7 @@ export default function App(){
         vy: 0,
         type: "Brick",
         height: 50,
-        width: 55,
+        width: 80,
         canCollide: useSharedValue(true),
       });
     }
@@ -68,9 +84,11 @@ export default function App(){
   useFrameCallback((frameInfo) => {
     if(!frameInfo.timeSincePreviousFrame) return;
 
-    animate([circleObject, paddleObject, ...bricks], frameInfo.timeSincePreviousFrame, 0);
+    animate([circleObject, paddleObject, ...bricks], frameInfo.timeSincePreviousFrame, 0, explosionObject);
   })
 
+  // const [explosionPosition, setExplosionPosition]= useState(120);
+  const explosionPosition = useSharedValue(120);
   const gesture = Gesture.Pan().onChange(({x}) => {
     paddleObject.x.value = x - paddleObject.width / 2;
   });
@@ -87,6 +105,7 @@ export default function App(){
 
             color={BALL_COLOR}
           />
+          <Explosion {...explosionObject}/>
           {
             bricks.map((brick) => (
               <RoundedRect
@@ -100,6 +119,7 @@ export default function App(){
             r={10}
           />
         </Canvas>
+        <Button onPress={() => {explosionObject.x.value = explosionObject.x.value + 50}} title="Press" />
       </View>
       </GestureDetector>
     </GestureHandlerRootView>
