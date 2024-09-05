@@ -33,18 +33,18 @@ export const Explosion : React.FC<ExplosionInterface> = ({x, y, opacity}) => {
           color="yellow"
         />
         <Circle
-          cx={useDerivedValue(() => animatedx.value + Math.random() * 100)} 
-          cy={useDerivedValue(() => animatedy.value + Math.random() * 65)}
+          cx={useDerivedValue(() => animatedx.value + Math.random() * 50)} 
+          cy={useDerivedValue(() => animatedy.value + Math.random() * 55)}
           r={r}
           opacity={useDerivedValue(() => withSpring(animatedOpacity.value))}
           color="yellow"
         />
         <Circle
-          cx={useDerivedValue(() => animatedx.value + Math.random() * 65)} 
-          cy={useDerivedValue(() => animatedy.value + Math.random() * 100)}
+          cx={useDerivedValue(() => animatedx.value + Math.random() * 55)} 
+          cy={useDerivedValue(() => animatedy.value + Math.random() * 50)}
           r={r}
           opacity={useDerivedValue(() => withSpring(animatedOpacity.value))}
-          color="yellow"
+          color="orange"
         />
       </Group>
   );

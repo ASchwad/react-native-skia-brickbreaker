@@ -55,7 +55,7 @@ export default function App(){
 
   const rows = 4;
   const columns = 3;
-  const columnPadding = 75;
+  const columnPadding = 85;
   const rowPadding = 30;
   const marginTop = 50;
   const marginLeft = 30;
@@ -96,7 +96,7 @@ export default function App(){
     <GestureHandlerRootView>
       <GestureDetector gesture={gesture}>
       <View style={styles.container}>
-        <Canvas style={{ flex: 1, backgroundColor: "red" }}>
+        <Canvas style={{ flex: 1, backgroundColor: "black" }}>
           <Circle 
             // {...circleObject}
             cx={circleObject.x} 
@@ -111,15 +111,16 @@ export default function App(){
               <RoundedRect
                 {...brick}
                 r={10}
+                color={"white"}
               />
             ))
           }
           <RoundedRect
             {...paddleObject}
+            color={"white"}
             r={10}
           />
         </Canvas>
-        <Button onPress={() => {explosionObject.x.value = explosionObject.x.value + 50}} title="Press" />
       </View>
       </GestureDetector>
     </GestureHandlerRootView>
